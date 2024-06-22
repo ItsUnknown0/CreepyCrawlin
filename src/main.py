@@ -47,8 +47,11 @@ while True:
     
     if newK == "finish" and len(Keywords) > 0:
         break
-
-    Keywords.append(newK)
+    
+    if newK in Keywords:
+        continue
+    else:
+        Keywords.append(newK)
 
 # Misc Functions
 async def ConvertToDomain(thyLink : str):
@@ -172,7 +175,7 @@ async def init():
     while len(SearchedLinks) < MaxLinksToSearch and len(LinksPendingToSearch) > 0: # Main Loop
         for link in LinksPendingToSearch:
             await SearchLink(link)
-            print(f"Searched {len(SearchedLinks)} links")
+            print(f"Went through {len(SearchedLinks)} links")
     
     print("The crawler has halted in searching any further...")
 
