@@ -1,8 +1,6 @@
 # Main Modules
 import time
 import asyncio
-import threading
-import concurrent.futures
 import pyppeteer
 import warnings
 import json
@@ -20,11 +18,6 @@ LinksPendingToSearch = []
 MaxRecurse = None # How many times this crawler can revisit a link
 MaxSearchDepth = None # How many times this crawler can go through pages within a domain
 MaxLinksToSearch = None # The max links the crawler will visit before calling it quits
-
-# Multithreading
-Thread1Links = []
-Thread2Links = []
-Thread3Links = []
 
 # Time
 StartTime = time.time()
@@ -155,8 +148,6 @@ async def SearchLink(Link : str):
             if Link in LinksPendingToSearch: # Remove this link in LinksPendingToSearch
                 LinksPendingToSearch.remove(Link)
 
-        #ConvertedLinks = []
-
         i = 0
         maxAdd = MaxSearchDepth - SearchedDomains[LinkDomain]
         for link in SiteLinks:
@@ -169,70 +160,19 @@ async def SearchLink(Link : str):
 
             LinksPendingToSearch.append(convertedValue)
             i+=1
-            
-            #return ConvertedLinks
+
     except Exception as msg:
         warnings.warn("Something went wrong: " + str(msg))
-        #return None
-
-# Multithreading
-async def LinkThreadSplitter(ReturnedLinks : list):
-    i = 0
-    for link in ReturnedLinks: # Splits Links into different threads
-        i += 1
-        if i == 1:
-            Thread1Links.append(link)
-        elif i == 2:
-            Thread2Links.append(link)
-        elif i == 3:
-            Thread3Links.append(link)
-            i = 1
-
-async def RunThreadLinks(threadLinks: list):
-    print(threadLinks)
-    for link in threadLinks:
-        await SearchLink(link)
-    
-    if threadLinks == Thread1Links: # Clears queued up links in the thread
-        Thread1Links = []
-    elif threadLinks == Thread2Links:
-        Thread2Links = []
-    elif threadLinks == Thread3Links:
-        Thread3Links = []
     
 # Main Loop
 async def init():
     print("Searching the inputed root link...")
     await SearchLink(RootLink)
-    print(LinksPendingToSearch)
 
     while len(SearchedLinks) < MaxLinksToSearch and len(LinksPendingToSearch) > 0: # Main Loop
-        await LinkThreadSplitter(LinksPendingToSearch) # Splits all returned links into different threads
-
-        """ Single Threaded Goodness
         for link in LinksPendingToSearch:
             await SearchLink(link)
-            print(LinksPendingToSearch)
-        """
-        
-        Thread1 = threading.Thread(target= RunThreadLinks, args=(Thread1Links,))
-        Thread1.start()
-        print("Started Thread 1")
-        Thread2 = threading.Thread(target= RunThreadLinks, args=(Thread2Links,))
-        Thread2.start()
-        print("Started Thread 2")
-        Thread3 = threading.Thread(target= RunThreadLinks, args=(Thread3Links,))
-        Thread3.start()
-        print("Started Thread 3")
-
-        print("Main loop is waiting on threads to finish their operations...")
-
-        Thread1.join()
-        print("Thread 1 finished its operations")
-        Thread2.join()
-        print("Thread 2 finished its operations")
-        Thread3.join()
-        print("Thread 3 finished its operations")
+            print(f"Searched {len(SearchedLinks)} links")
     
     print("The crawler has halting in searching any further...")
 
