@@ -100,13 +100,12 @@ async def SearchLink(Link : str):
 
     print(f"Searching {Link}!")
 
+    browser = await pyppeteer.launch()
+    page = await browser.newPage()
+    await page.waitFor(500)
+    page.setDefaultNavigationTimeout(30000)
+
     try:
-        browser = await pyppeteer.launch()
-        page = await browser.newPage()
-
-        await page.waitFor(500)
-        page.setDefaultNavigationTimeout(30000)
-
         await page.goto(ThyLink)
 
         HeadElement = await page.querySelector("head")
@@ -163,9 +162,10 @@ async def SearchLink(Link : str):
 
             LinksPendingToSearch.append(convertedValue)
             i+=1
-
     except Exception as msg:
         warnings.warn("Something went wrong: " + str(msg))
+    
+    browser.close()
     
 # Main Loop
 async def init():
