@@ -186,3 +186,5 @@ InitTask.run_until_complete(init())
 # End Time
 ExecutionTime = round((time.time()) - StartTime,2)
 print(f"Execution time: {ExecutionTime} seconds.")
+
+input("Enter anything to continue...")
