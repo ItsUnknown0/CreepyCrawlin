@@ -174,7 +174,7 @@ async def init():
             await SearchLink(link)
             print(f"Searched {len(SearchedLinks)} links")
     
-    print("The crawler has halting in searching any further...")
+    print("The crawler has halted in searching any further...")
 
     asyncio.create_task(SaveData())
 
