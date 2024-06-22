@@ -165,7 +165,7 @@ async def SearchLink(Link : str):
     except Exception as msg:
         warnings.warn("Something went wrong: " + str(msg))
     
-    browser.close()
+    await browser.close()
     
 # Main Loop
 async def init():
